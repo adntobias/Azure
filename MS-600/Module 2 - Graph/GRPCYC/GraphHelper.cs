@@ -94,9 +94,9 @@ namespace GRPCYC
           Description = "Sample Group for MS600",
           DisplayName = name,
           GroupTypes = new List<String>()
-            {
-                "Unified"
-            },
+          {
+            "Unified"
+          },
           MailEnabled = true,
           MailNickname = name.Replace(" ", ""),
           SecurityEnabled = false

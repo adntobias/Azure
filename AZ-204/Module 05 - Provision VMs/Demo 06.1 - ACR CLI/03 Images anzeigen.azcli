@@ -4,4 +4,4 @@ $Registry="MyACRTP"
 az acr repository list --name $Registry --output table
 
 # Tags des Repositories ausgeben
-az acr repository show-tags --name $Registry --repository aci-helloworld --output table
+az acr repository show-tags --name $Registry --repository cowsay --output table

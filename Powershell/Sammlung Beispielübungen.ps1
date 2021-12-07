@@ -1,13 +1,13 @@
-#Übungen mit Musterlösung
+#ï¿½bungen mit Musterlï¿½sung
 
 # Alle Prozesse nur mit Namen und ID ausgeben lassen, (ABER nur die ersten und letzten 5 EintrÃ¤ge)
 Get-Process | Select-Object -Property Name, Id -First 5 -Last 5
 
 #5 Prozesse, die mehr als 5MB Speicher verbrauchen
-Get-Process | where -Property PM -gt 5MB | select -First 5
+Get-Process | where -Property WS -gt 5MB | select -First 5
 
 #Alle Prozesse, die mehr als 50MB und weniger als 100MB Speicher verbrauchen
-Get-Process | where {($_.PM -gt 50MB) -and ($_.PM -lt 100MB)}
+Get-Process | where {($_.WS -gt 50MB) -and ($_.WS -lt 100MB)}
 
 #Alle laufenden Services, beginnend "a" ausgeben
 Get-Service | where {$_.Status -eq "running" -and $_.Name -like "a*"}
@@ -30,10 +30,10 @@ foreach($i in 1..30)
 
 1..30 | ForEach-Object { New-Item -Path ("C:\dates\Log_{0:yyyyMMdd_HHmmss}.txt" -f (Get-Date)); Start-Sleep -Seconds 1 }
 
-#Alles bis auf die neuesten 10 Dateien löschen
+#Alles bis auf die neuesten 10 Dateien lï¿½schen
 Get-ChildItem "C:\dates" | Sort-Object -Property CreationTime -Descending | Select-Object -Skip 10 | Remove-Item
 
-# Alle Dateien in c:\dates grafisch ausgeben und ausgewählte löschen
+# Alle Dateien in c:\dates grafisch ausgeben und ausgewï¿½hlte lï¿½schen
 Get-ChildItem -Path C:\dates | Out-GridView -PassThru | Remove-Item #-WhatIf
 
 # 5 Dateien in c:\dates mit je 5MB DateigrÃ¶ÃŸe erzeugen
@@ -47,7 +47,7 @@ $user = "Max_Mustermann"
 $pwd = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pwd
 
-#Häufige Kurzschreibweisen
+#Hï¿½ufige Kurzschreibweisen
 Get-Member => gm
 Where-Object => where => ?
 ForEach-Object => foreach => %
@@ -75,7 +75,7 @@ $user = "Max_Mustermann"
 $pwd = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pwd
 
-#MFA-fähig
+#MFA-fï¿½hig
 Connect-AzAccount
 
 #----------------------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ $rg = New-AzResourceGroup -Name "MyRg" `
 #ResourceGroup abrufen
 Get-AzResourceGroup -Name $rg.ResourceGroupName
 
-#Löschen einer ResourceGroup
+#Lï¿½schen einer ResourceGroup
 Remove-AzResourceGroup -Id $rg.ResourceId 
 
 #----------------------------------------------------------------------------------------------------------------

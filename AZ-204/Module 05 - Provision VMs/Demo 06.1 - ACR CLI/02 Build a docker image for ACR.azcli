@@ -1,16 +1,17 @@
 $RGName="ACRGroupTP"
 $Registry="MyACRTP"
+
 # Docker Image laden
-docker pull microsoft/aci-helloworld
+docker pull mcr.microsoft.com/azuredocs/aci-helloworld
 
 # Login Server Namen der ACR Instanz abfragen
 $RegistryFull=$( az acr list --resource-group $RGName --query "[].{acrLoginServer:loginServer}" --output tsv)
 
 # Image mit diesem Namen Taggen
-docker tag microsoft/aci-helloworld $RegistryFull"/aci-helloworld:v1"
+docker tag chuanwen/cowsay $RegistryFull"/cowsay:v1"
 
 # Image in die Registry pushen
-docker push $RegistryFull"/aci-helloworld:v1"
+docker push $RegistryFull"/cowsay:v1"
 
 # Create a Dockerfile with meaningful build instructions
 echo "FROM chuanwen/cowsay" > Dockerfile

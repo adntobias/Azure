@@ -1,7 +1,9 @@
 $RGName="ACRGroupTP"
 $Registry="MyACRTP"
+
 # Eine Container Registry Instanz erstellen
 az group create -n $RGName -l northeurope
 az acr create --resource-group $RGName --name $Registry --sku Basic
+
 # Login
 az acr login --name $Registry

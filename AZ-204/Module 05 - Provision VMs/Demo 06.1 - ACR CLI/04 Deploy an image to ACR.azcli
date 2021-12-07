@@ -9,7 +9,7 @@ az acr update --name $Registry --admin-enabled true
 az acr credential show --name $Registry --query "passwords[0].value"
 
 # Deploy container image
-az container create -g $RGName -n $ContName --image $Registry".azurecr.io/aci-helloworld:v1" --cpu 1 --memory 1 --registry-username $Registry --registry-password "p4KQcDgTVAGn0whQAyc4G+JUEWrBd89C" --dns-name-label "dns-label" --ports 80
+az container create -g $RGName -n $ContName --image $Registry".azurecr.io/aci-helloworld:v1" --cpu 1 --memory 1 --registry-username $Registry --registry-password "RMJLZ9DzeOoQbHxbuz1RKjpM+jh5tttX" --dns-name-label "dns-label" --ports 80
 
 # Container Status anzeigen
 az container show -g $RGName -n $ContName --query instanceView.state

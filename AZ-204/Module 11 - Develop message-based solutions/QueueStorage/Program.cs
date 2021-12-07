@@ -84,6 +84,7 @@ namespace QueueStorage
 
             // Clean up
             Console.WriteLine($"Deleting queue: {queueClient.Name}");
+            
             await queueClient.DeleteAsync();
 
             Console.WriteLine("Done");

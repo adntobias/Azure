@@ -93,14 +93,14 @@ namespace TEATEM
         Description = "My Sample Team’s Description",
         Visibility = TeamVisibilityType.Public,
         Channels = new TeamChannelsCollectionPage()
-            {
-                new Channel
-                {
-                    DisplayName = "Announcements 📢",
-                    IsFavoriteByDefault = true,
-                    Description = "This is a sample announcements channel that is favorited by default. Use this channel to make important team, product, and service announcements."
-                }
-            },
+        {
+          new Channel
+          {
+            DisplayName = "Announcements 📢",
+            IsFavoriteByDefault = true,
+            Description = "This is a sample announcements channel that is favorited by default. Use this channel to make important team, product, and service announcements."
+          }
+        },
         MemberSettings = new TeamMemberSettings
         {
           AllowCreateUpdateChannels = true,
@@ -177,7 +177,8 @@ namespace TEATEM
         request.Method = "POST";
 
         string location;
-        using (HttpResponseMessage response = await request.SendRequestAsync(team, CancellationToken.None)){
+        using (HttpResponseMessage response = await request.SendRequestAsync(team, CancellationToken.None))
+        {
           location = response.Headers.Location.ToString();
 
           // looks like: /teams('7070b1fd-1f14-4a06-8617-254724d63cde')/operations('c7c34e52-7ebf-4038-b306-f5af2d9891ac')
