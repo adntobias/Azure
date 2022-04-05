@@ -1,8 +1,8 @@
 #Variables
 $Location="northeurope"
 $RGName="ManagedIdentGroupTP"
-$VaultName="ManagedIdentKVTP"
-$WebAppName="ManagedIdentWebAppTP"
+$VaultName="ManagedIdentKVTP2403"
+$WebAppName="ManagedIdentWebAppTP2403"
 $PlanName=$WebAppName+"-Plan"
 #ResourceGroup
 az group create -l $Location -n $RGName 
@@ -13,6 +13,14 @@ az keyvault secret set --name supergeheim --vault-name $VaultName --value "AZ204
 az appservice plan create -g $RGName -n $PlanName --sku FREE 
 #WebApp
 az webapp create -g $RGName -p $PlanName -n $WebAppName
+
+#Windows
+#Compress-Archive -Path * -DestinationPath web.zip
+#Unix 
+# zip -r <file-name>.zip .
+
+#Zip Deployment
+#az webapp deploy --resource-group $RGName --name $WebAppName --src-path .\web.zip
 
 #Remove RG 
 #az group delete -n $RGName --no-wait -y

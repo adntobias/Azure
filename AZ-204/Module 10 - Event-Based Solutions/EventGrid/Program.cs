@@ -34,16 +34,16 @@ namespace EventGrid
                     eventsList.Add(new EventGridEvent()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        //Topic = DomainTopic,
+                        Topic = DomainTopic,
                         EventType = "My.Custom.Event.Type.EventDomain",
                         Data = new Event() 
                         {
                             ItemInformation = "Some more information",
-                            Schulung = "29.04.2021 11:17 Uhr"
+                            Schulung = "24.02.2022 11:17 Uhr"
                         },
 
                         EventTime = DateTime.Now,
-                        Subject = "My custom subject 29.04.2021",
+                        Subject = "My custom subject 24.02.2022",
                         DataVersion = "2.011256"
                     });
                 }

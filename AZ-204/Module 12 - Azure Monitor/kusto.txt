@@ -1,0 +1,57 @@
+// Chart CPU usage trends by computer 
+// Calculate CPU usage patterns over the last hour, chart by percentiles. 
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "Processor"
+| where Name == "UtilizationPercentage"
+| summarize avg(Val) by bin(TimeGenerated, 5m), Computer //split up by computer
+| render timechart
+
+// Stopped Windows services  
+// Find all windows services that stopped in the last 30 minutes. 
+// To create an alert for this query, click '+ New alert rule'
+ConfigurationChange  // (relies on the Change Tracking solution): 
+| where ConfigChangeType == "WindowsServices" and SvcChangeType == "State"
+| where SvcPreviousState == "Running" and SvcState == "Stopped"
+| where SvcStartupType == "Auto" and TimeGenerated > ago(7d)
+
+// Shut down Virtual Machines 
+// Virtual Machines successfully shut down in the last 10 minutes. 
+// To create an alert for this query, click '+ New alert rule'
+AzureActivity
+| where TimeGenerated > ago(7d)
+| where OperationName == "Deallocate Virtual Machine" and ActivityStatus == "Succeeded"
+
+// Track VM Availability using Heartbeat  
+// Display the VM's reported availability during the last hour. 
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "Computer"
+| where Name == "Heartbeat"
+| summarize heartbeat_count = count() by bin(TimeGenerated, 5m), Computer
+| extend alive=iff(heartbeat_count > 2, 1.0, 0.0) //computer considered "down" if it has 2 or fewer heartbeats in 5 min interval
+| project TimeGenerated, alive, Computer
+| render timechart with (ymin = 0, ymax = 1)
+
+// Virtual Machine available memory 
+// Chart the VM's available memory over time. 
+// To create an alert for this query, click '+ New alert rule'
+Perf
+| where ObjectName == "Memory" and
+(CounterName == "Available MBytes Memory" or // the name used in Linux records
+CounterName == "Available MBytes") // the name used in Windows records
+|  summarize avg(CounterValue) by bin(TimeGenerated, 15min), Computer, _ResourceId // bin is used to set the time grain to 15 minutes
+| render timechart
+
+// Virtual Machine free disk space 
+// Show the latest report of free disk space, per instance. 
+// To create an alert for this query, click '+ New alert rule'
+Perf
+| where ObjectName == "LogicalDisk" or // the object name used in Windows records
+ObjectName == "Logical Disk" // the object name used in Linux records
+| where CounterName == "Free Megabytes"
+| summarize arg_max(TimeGenerated, *) by InstanceName // arg_max over TimeGenerated returns the latest record
+| project TimeGenerated, InstanceName, CounterValue, Computer, _ResourceId
+

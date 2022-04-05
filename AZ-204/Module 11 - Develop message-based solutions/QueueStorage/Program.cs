@@ -21,7 +21,7 @@ namespace QueueStorage
         }
 
         static async Task AsyncMain(string[] args) {
-            string queueName = "quickstartqueues-" + Guid.NewGuid().ToString();
+            string queueName = "quickstartqueues-f110e125-aa27-4cac-98d5-7f62ff2836db" ;//+ Guid.NewGuid().ToString();
 
             Console.WriteLine($"Creating queue: {queueName}");
 
@@ -35,12 +35,11 @@ namespace QueueStorage
             Console.WriteLine("\nAdding messages to the queue...");
 
             // Send several messages to the queue
-            
-            await queueClient.SendMessageAsync("First message");
+            SendReceipt receipt = await queueClient.SendMessageAsync("First message");
             await queueClient.SendMessageAsync("Second message");
 
             // Save the receipt so we can update this message later
-            SendReceipt receipt = await queueClient.SendMessageAsync("Third message");
+            await queueClient.SendMessageAsync("Third message");
 
             Console.WriteLine("\nPeek at the messages in the queue...");
 
@@ -58,7 +57,7 @@ namespace QueueStorage
             Console.WriteLine("\nUpdating the third message in the queue...");
 
             // Update a message using the saved receipt from sending the message
-            await queueClient.UpdateMessageAsync(receipt.MessageId, receipt.PopReceipt, "Third message has been updated");
+            await queueClient.UpdateMessageAsync(receipt.MessageId, receipt.PopReceipt, "First message has been updated");
 
             Console.WriteLine("\nReceiving messages from the queue...");
 

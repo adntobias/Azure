@@ -1,7 +1,4 @@
 {
     "CosmosUri" : "",
-    "CosmosKeyPrimary" : "",
-    "CosmosKeySecondary" : "",
-    "CosmosKeyConnectionPrimary" : "",
-    "CosmosKeyConnectionSecondary" : ""
+    "CosmosKeyPrimary" : ""
 }

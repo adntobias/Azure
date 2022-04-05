@@ -14,7 +14,7 @@ namespace ServiceBus
 
     // Batch Account credentials
     static String ServiceBusConnectionString = azureConfig.GetValue("ServiceBusConnectionString").ToString();
-    const string QueueName = "myqueue";
+    const string QueueName = "q";
     const string TopicName = "mytopic";
 
     static ServiceBusClient serviceBusClient;
@@ -30,9 +30,18 @@ namespace ServiceBus
     {
       const int numberOfMessages = 10;
 
-      serviceBusClient = new ServiceBusClient(ServiceBusConnectionString);
+      //In Case of a proxy - use Port 443
+      /*
+      var options = new ServiceBusClientOptions
+      {
+          TransportType = ServiceBusTransportType.AmqpWebSockets
+      };
+      */
+
+      serviceBusClient = new ServiceBusClient(ServiceBusConnectionString/* , options */);
+      
       queueSender = serviceBusClient.CreateSender(QueueName);
-      topicSender = serviceBusClient.CreateSender(TopicName);
+      //topicSender = serviceBusClient.CreateSender(TopicName);
 
       Console.WriteLine("======================================================");
       Console.WriteLine("Press ENTER key to exit after sending all the messages.");
@@ -66,7 +75,7 @@ namespace ServiceBus
           Console.WriteLine($"Sending messages: {messageBody}");
 
           // Send the message to the queue and topic.
-          await topicSender.SendMessageAsync(topicMessage);
+        //  await topicSender.SendMessageAsync(topicMessage);
           await queueSender.SendMessageAsync(queueMessage);
         }
       }

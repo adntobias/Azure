@@ -16,7 +16,7 @@ namespace ServiceBusReceiver
         //static String ServiceBusConnectionString = "Endpoint=sb://servicebusnskr.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=U6ltMfbkcv+BLV3WaP83UQv8vtFE1pvNqTL+lVnmAds=";
         const string QueueName = "myqueue";
         const string TopicName = "mytopic";
-        const string SubscriptionName = "eventviewer";
+        const string SubscriptionName = "mysubs";
 
         static ServiceBusClient serviceBusClient;
         static ServiceBusProcessor serviceBusProcessor;
@@ -29,8 +29,8 @@ namespace ServiceBusReceiver
         static async Task MainAsync()
         {
             serviceBusClient = new ServiceBusClient(ServiceBusConnectionString);
-            serviceBusProcessor = serviceBusClient.CreateProcessor(TopicName, SubscriptionName, RegisterOptions());
-            //serviceBusProcessor = serviceBusClient.CreateProcessor(QueueName, RegisterOptions());
+            //serviceBusProcessor = serviceBusClient.CreateProcessor(TopicName, SubscriptionName, RegisterOptions());
+            serviceBusProcessor = serviceBusClient.CreateProcessor(QueueName, RegisterOptions());
             serviceBusProcessor.ProcessErrorAsync += ExceptionReceivedHandler;
             serviceBusProcessor.ProcessMessageAsync += ProcessMessagesAsync;
 
