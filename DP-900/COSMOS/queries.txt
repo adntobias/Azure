@@ -1,0 +1,63 @@
+-- Get an A-Z list of all the volcanoes in the world.
+SELECT v["Volcano Name"] 
+FROM Volcanos v
+ORDER BY v["Volcano Name"]
+
+
+-- Get a list of all the volcanoes in Iceland.
+SELECT v["Volcano Name"] 
+FROM Volcanos v
+WHERE v.Country = "Iceland"
+
+-- With Lat/Lon
+SELECT v["Volcano Name"], v.Location
+FROM Volcanos v
+WHERE v.Country = "Iceland"
+
+
+-- What can you tell me about Hekla?
+SELECT *
+FROM Volcanos v
+WHERE v["Volcano Name"] = "Hekla" 
+
+
+-- Which is taller, Mt Fiji or Mt Etna?
+SELECT v["Volcano Name"], v.Elevation
+FROM Volcanos v
+WHERE v["Volcano Name"] = "Fuji" OR v["Volcano Name"] = "Etna"
+
+
+-- What are the 10 tallest volcanoes in the world?
+SELECT TOP 10 v["Volcano Name"], v.Country, v.Elevation
+FROM Volcanos v
+WHERE v.Elevation != null
+ORDER BY v.Elevation DESC
+
+
+-- What are the 5 northernmost volcanoes in the world?
+SELECT TOP 5 v["Volcano Name"], v.Country, v.Location
+FROM Volcanos v
+ORDER BY v.Location.coordinates[1] DESC
+
+
+-- What are the most volcanically active countries in the world? ------ OH NO!!
+SELECT TOP 5 COUNT(1) AS NumberOfVolcanoes, v.Country
+FROM Volcanos v
+GROUP BY v.Country 
+ORDER BY v.NumberOfVolcanoes
+
+
+-- If you stood all the volcanoes in the world on top of each other, could you reach the Moon? (384,000 km distance to the Moon)
+SELECT SUM(v.Elevation) AS TotalHeight
+FROM Volcanos v
+where v.Elevation != null AND v.Elevation >= 0
+
+SELECT SUM(v.Elevation) AS TotalHeight
+FROM Volcanos v
+where v.Elevation != null AND v.Elevation <= 0
+
+
+-- Which volcanoes have erupted since I was born?   -- DATEN NICHT SO GENAU -> Eyjafjallajokull
+SELECT StringToNumber(Substring(TRIM(v["Last Known Eruption"], "Last known eruption in "), 0, 4)) AS Year, v["Volcano Name"], v.Country
+FROM Volcanos v
+where v["Last Known Eruption"] LIKE "Last known eruption in % or later" AND v.Year >= 1964
