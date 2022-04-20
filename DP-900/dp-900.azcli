@@ -1,7 +1,7 @@
+#Run this script in Azure CloudShell
 
 #Variables
-#$(head -n 10 /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1) #RandomString - To Be Replaced
-Suffix="tp234"
+Suffix="tp" #$(head -n 10 /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1) #RandomString - To Be Replaced
 RGName="dp900demo"$Suffix
 Location="germanywestcentral"
 CosmosName="cosmosdemo"$Suffix
