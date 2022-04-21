@@ -11,6 +11,7 @@ SQLServerName="sqldemoserver"$Suffix
 SQLDBCarsName="cars"$Suffix
 SQLDBDemoName="sqldemo"$Suffix
 StorageAccName="demostore"$Suffix
+FileContainerName="datafactory"
 DataFactoryName="datafactorydemo"$Suffix
 SQLADMIN="sqladmin"
 SQLPWD="Passw.rd"
@@ -24,6 +25,9 @@ az identity create --name $IdentityName -g $RGName
 IdentID=$(az identity show -n $IdentityName -g $RGName --query principalId -o tsv)
 
 az storage account create -g $RGName -n $StorageAccName --location $Location --sku Standard_LRS --kind StorageV2 --user-identity-id $IdentID
+StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query [0].value -o tsv)
+az storage container create -n $FileContainerName --public-access blob --account-name $StorageAccName --account-key $StorAccKey
+#Upload .csv to Container (https://github.com/adntobias/Azure/blob/master/DP-900/DATA%20FACTORY/autos.csv)
 
 az sql server create -l $Location -g $RGName -n $SQLServerName -u $SQLADMIN -p $SQLPWD --user-assigned-identity-id $IdentID 
 az sql db create -g $RGName -s $SQLServerName -n $SQLDBDemoName -e Basic --max-size 500MB --no-wait
@@ -33,7 +37,6 @@ az datafactory create --location $Location --name $DataFactoryName -g $RGName
 az postgres flexible-server create --location $Location --resource-group $RGName --name $PostgresName --admin-user $SQLADMIN --admin-password $SQLPWD --sku-name Standard_B1ms --tier Burstable --public-access 0.0.0.0 --storage-size 32  --version 13
 az postgres flexible-server db create --resource-group $RGName --server-name $PostgresName --database-name dvdrental 
 #connect and restore in pgAdmin (https://www.pgadmin.org/) (https://github.com/adntobias/Azure/blob/master/DP-900/POSTGRES/dvdrental.tar)
-
 
 az cognitiveservices account create --name $OCRName --resource-group $RGName --kind ComputerVision --sku S1 --location $Location --yes
 
