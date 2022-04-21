@@ -32,17 +32,20 @@ az datafactory create --location $Location --name $DataFactoryName -g $RGName
 
 az postgres flexible-server create --location $Location --resource-group $RGName --name $PostgresName --admin-user $SQLADMIN --admin-password $SQLPWD --sku-name Standard_B1ms --tier Burstable --public-access 0.0.0.0 --storage-size 32  --version 13
 az postgres flexible-server db create --resource-group $RGName --server-name $PostgresName --database-name dvdrental 
-#connect and restore in pgAdmin
+#connect and restore in pgAdmin (https://www.pgadmin.org/) (https://github.com/adntobias/Azure/blob/master/DP-900/POSTGRES/dvdrental.tar)
+
 
 az cognitiveservices account create --name $OCRName --resource-group $RGName --kind ComputerVision --sku S1 --location $Location --yes
 
 az cosmosdb create -n $CosmosName -g $RGName #--locations regionName=$Location failoverPriority=0 isZoneRedundant=False
 az cosmosdb sql database create --account-name $CosmosName --resource-group $RGName --name Volcanos
 az cosmosdb sql container create -g $RGName -a $CosmosName -d Volcanos -n ByCountry --partition-key-path "/Country" --throughput "400"
-#connect and import data in portal
+#connect and import data in portal (https://github.com/adntobias/Azure/blob/master/DP-900/COSMOS/cosmos.json)
 
 #SQL Firewall -> Allow Azure services
 az sql server firewall-rule create -g $RGName -s $SQLServerName -n AllowAzure --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+
+#Identity now needs Permissions in SQL Server and Storage Account 
 #------------------------------------------------------------------------------
 
 #Connection Infos
