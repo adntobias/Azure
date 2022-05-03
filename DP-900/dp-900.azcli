@@ -1,0 +1,64 @@
+#Run this script in Azure CloudShell
+
+#Variables
+Suffix="tp" #$(head -n 10 /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1) #RandomString - To Be Replaced
+RGName="dp900demo"$Suffix
+Location="germanywestcentral"
+CosmosName="cosmosdemo"$Suffix
+PostgresName="postgresdemo"$Suffix
+OCRName="ocrdemo"$Suffix
+SQLServerName="sqldemoserver"$Suffix
+SQLDBCarsName="cars"$Suffix
+SQLDBDemoName="sqldemo"$Suffix
+StorageAccName="demostore"$Suffix
+FileContainerName="datafactory"
+DataFactoryName="datafactorydemo"$Suffix
+SQLADMIN="sqladmin"
+SQLPWD="Passw.rd"
+IdentityName="dp900ident"
+#--------------------------------------------------
+
+#Create Ressources
+az group create --name $RGName --location $Location
+
+az identity create --name $IdentityName -g $RGName
+IdentID=$(az identity show -n $IdentityName -g $RGName --query principalId -o tsv)
+
+az storage account create -g $RGName -n $StorageAccName --location $Location --sku Standard_LRS --kind StorageV2 --user-identity-id $IdentID
+StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query [0].value -o tsv)
+az storage container create -n $FileContainerName --public-access blob --account-name $StorageAccName --account-key $StorAccKey
+#Upload .csv to Container (https://github.com/adntobias/Azure/blob/master/DP-900/DATA%20FACTORY/autos.csv)
+
+az sql server create -l $Location -g $RGName -n $SQLServerName -u $SQLADMIN -p $SQLPWD --user-assigned-identity-id $IdentID 
+az sql db create -g $RGName -s $SQLServerName -n $SQLDBDemoName -e Basic --max-size 500MB --no-wait
+
+az datafactory create --location $Location --name $DataFactoryName -g $RGName 
+
+az postgres flexible-server create --location $Location --resource-group $RGName --name $PostgresName --admin-user $SQLADMIN --admin-password $SQLPWD --sku-name Standard_B1ms --tier Burstable --public-access 0.0.0.0 --storage-size 32  --version 13
+az postgres flexible-server db create --resource-group $RGName --server-name $PostgresName --database-name dvdrental 
+#connect and restore in pgAdmin (https://www.pgadmin.org/) (https://github.com/adntobias/Azure/blob/master/DP-900/POSTGRES/dvdrental.tar)
+
+az cognitiveservices account create --name $OCRName --resource-group $RGName --kind ComputerVision --sku S1 --location $Location --yes
+
+az cosmosdb create -n $CosmosName -g $RGName #--locations regionName=$Location failoverPriority=0 isZoneRedundant=False
+az cosmosdb sql database create --account-name $CosmosName --resource-group $RGName --name Volcanos
+az cosmosdb sql container create -g $RGName -a $CosmosName -d Volcanos -n ByCountry --partition-key-path "/Country" --throughput "400"
+#connect and import data in portal (https://github.com/adntobias/Azure/blob/master/DP-900/COSMOS/cosmos.json)
+
+#SQL Firewall -> Allow Azure services
+az sql server firewall-rule create -g $RGName -s $SQLServerName -n AllowAzure --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+
+#Identity now needs Permissions in SQL Server and Storage Account 
+#------------------------------------------------------------------------------
+
+#Connection Infos
+CosmosEndpoint=$(az cosmosdb show -n $CosmosName -g $RGName --query writeLocations[0].documentEndpoint -o tsv)
+CosmosKey=$(az cosmosdb keys list -n $CosmosName -g $RGName --query primaryMasterKey -o tsv)
+
+OCRKey=$(az cognitiveservices account keys list --name $OCRName --resource-group $RGName --query key1 -o tsv)
+OCREndpoint=$(az cognitiveservices account show --name $OCRName --resource-group $RGName --query properties.endpoint -o tsv)
+
+PostgresConnString=$(az postgres flexible-server show-connection-string -s postrestpdb --query connectionStrings.php -o tsv)
+
+StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query [0].value -o tsv)
+StorAccConnString=$(az storage account show-connection-string -g $RGName -n $StorageAccName -o tsv)
