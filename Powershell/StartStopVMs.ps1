@@ -35,6 +35,3 @@ foreach($RG in $RGs)
         }
     }
 }
-
-  #Endpoint Manager Module 
-  #Folien an TLN  senden

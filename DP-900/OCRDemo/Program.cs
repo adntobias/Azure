@@ -49,11 +49,11 @@ class Program
           await GetTextRead(imageFile);
           break;
         case "3":
-          imageFile = "images/berg.jpg"; //avengers //dracula //berg
+          imageFile = "images/avengers.jpg"; //avengers //dracula //berg
           await GetTextAnalysis(imageFile);
           break;
         case "4":
-          imageFile = "images/Notiz.png";
+          imageFile = "images/Note.jpg";
           await GetTextRead(imageFile);
           break;
         default:
