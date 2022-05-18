@@ -1,4 +1,4 @@
-#�bungen mit Musterl�sung
+#Übungen mit Musterlösung
 
 # Alle Prozesse nur mit Namen und ID ausgeben lassen, (ABER nur die ersten und letzten 5 Einträge)
 Get-Process | Select-Object -Property Name, Id -First 5 -Last 5
@@ -29,7 +29,7 @@ foreach ($i in 1..30) {
 
 1..30 | ForEach-Object { New-Item -Path ("C:\dates\Log_{0:yyyyMMdd_HHmmss}.txt" -f (Get-Date)); Start-Sleep -Seconds 1 }
 
-#Alles bis auf die neuesten 10 Dateien l�schen
+#Alles bis auf die neuesten 10 Dateien löschen
 Get-ChildItem "C:\dates" | Sort-Object -Property CreationTime -Descending | Select-Object -Skip 10 | Remove-Item
 
 # Alle Dateien in c:\dates grafisch ausgeben und ausgew�hlte l�schen
@@ -109,8 +109,8 @@ $cred = Get-Credential -Message "Bitte Nutzername und Passwort eingeben"
 
 #Credential-Objekt automatisiert erstellen -- Default-User und Passwort
 $user = "Max_Mustermann"
-$pwd = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pwd
+$pw0d = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pw0d
 
 #H�ufige Kurzschreibweisen
 Get-Member => gm
@@ -137,8 +137,8 @@ $cred = Get-Credential -Message "Bitte Nutzername und Passwort eingeben"
 
 #Credential-Objekt automatisiert erstellen -- Default-User und Passwort -- Kein MFA
 $user = "Max_Mustermann"
-$pwd = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pwd
+$pw0d = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pw0d
 
 #MFA-f�hig
 Connect-AzAccount
