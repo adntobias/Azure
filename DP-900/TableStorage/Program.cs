@@ -36,6 +36,7 @@ namespace TableStorage
 
       Console.WriteLine(InsertAllTheThings(table).GetAwaiter().GetResult());
       
+      Console.Write("Press ENTER to delete");
       Console.ReadLine();
       // Delete Table
       DeleteTableAsync().GetAwaiter().GetResult();

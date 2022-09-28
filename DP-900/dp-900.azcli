@@ -29,18 +29,22 @@ StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query 
 az storage container create -n $FileContainerName --public-access blob --account-name $StorageAccName --account-key $StorAccKey
 #Upload .csv to Container (https://github.com/adntobias/Azure/blob/master/DP-900/DATA%20FACTORY/autos.csv)
 
+az datafactory create --location $Location --name $DataFactoryName -g $RGName 
+
+#difficulties to provision ressources at the time, so change to US
+Location="westus"
+
 az sql server create -l $Location -g $RGName -n $SQLServerName -u $SQLADMIN -p $SQLPWD --user-assigned-identity-id $IdentID 
 az sql db create -g $RGName -s $SQLServerName -n $SQLDBDemoName -e Basic --max-size 500MB --no-wait
 
-az datafactory create --location $Location --name $DataFactoryName -g $RGName 
-
 az postgres flexible-server create --location $Location --resource-group $RGName --name $PostgresName --admin-user $SQLADMIN --admin-password $SQLPWD --sku-name Standard_B1ms --tier Burstable --public-access 0.0.0.0 --storage-size 32  --version 13
 az postgres flexible-server db create --resource-group $RGName --server-name $PostgresName --database-name dvdrental 
+#TODO: Add IP to Firewall
 #connect and restore in pgAdmin (https://www.pgadmin.org/) (https://github.com/adntobias/Azure/blob/master/DP-900/POSTGRES/dvdrental.tar)
 
 az cognitiveservices account create --name $OCRName --resource-group $RGName --kind ComputerVision --sku S1 --location $Location --yes
 
-az cosmosdb create -n $CosmosName -g $RGName #--locations regionName=$Location failoverPriority=0 isZoneRedundant=False
+az cosmosdb create -n $CosmosName -g $RGName --locations regionName=$Location failoverPriority=0 isZoneRedundant=False
 az cosmosdb sql database create --account-name $CosmosName --resource-group $RGName --name Volcanos
 az cosmosdb sql container create -g $RGName -a $CosmosName -d Volcanos -n ByCountry --partition-key-path "/Country" --throughput "400"
 #connect and import data in portal (https://github.com/adntobias/Azure/blob/master/DP-900/COSMOS/cosmos.json)
@@ -62,3 +66,14 @@ PostgresConnString=$(az postgres flexible-server show-connection-string -s postr
 
 StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query [0].value -o tsv)
 StorAccConnString=$(az storage account show-connection-string -g $RGName -n $StorageAccName -o tsv)
+
+echo $CosmosEndpoint
+echo $CosmosKey
+
+echo $OCRKey
+echo $OCREndpoint
+
+echo $PostgresConnString
+
+echo $StorAccKey
+echo $StorAccConnString

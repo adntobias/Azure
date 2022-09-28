@@ -33,33 +33,45 @@ class Program
         Endpoint = cogSvcEndpoint
       };
 
-      // Menu for text reading functions
-      Console.WriteLine("1: Use OCR API\n2: Use Read API\n3: Analyze Image\n4: DP-900 Demo\nAny other key to quit");
-      Console.WriteLine("Enter a number:");
-      string command = Console.ReadLine();
-      string imageFile;
-      switch (command)
+      while(true)
       {
-        case "1":
-          imageFile = "images/Lincoln.jpg";
-          await GetTextOcr(imageFile);
-          break;
-        case "2":
-          imageFile = "images/Rome.pdf";
-          await GetTextRead(imageFile);
-          break;
-        case "3":
-          imageFile = "images/avengers.jpg"; //avengers //dracula //berg
-          await GetTextAnalysis(imageFile);
-          break;
-        case "4":
-          imageFile = "images/Note.jpg";
-          await GetTextRead(imageFile);
-          break;
-        default:
-          break;
+        // Menu for text reading functions
+        Console.WriteLine("1: Use OCR API\n2: Use Read API\n3: Analyze Image\n4: DP-900 Group\n5: DP-900 Person\n6: DP-900 Mountain\n'q' to quit");
+        Console.WriteLine("Enter a number:");
+        string command = Console.ReadLine();
+        string imageFile;
+        
+        switch (command)
+        {
+          case "1":
+            imageFile = "images/Lincoln.jpg";
+            await GetTextOcr(imageFile);
+            break;
+          case "2":
+            imageFile = "images/Rome.pdf";
+            await GetTextRead(imageFile);
+            break;
+          case "3":
+            imageFile = "images/Note.jpg";
+            await GetTextRead(imageFile);
+            break;
+          case "4":
+            imageFile = "images/avengers.jpg"; 
+            await GetTextAnalysis(imageFile);
+            break;
+          case "5":
+            imageFile = "images/dracula.jpg"; 
+            await GetTextAnalysis(imageFile);
+            break;
+          case "6":
+            imageFile = "images/berg.jpg"; 
+            await GetTextAnalysis(imageFile);
+            break;
+          case "q":
+            Environment.Exit(0);
+            break;
+        }
       }
-
     }
     catch (Exception ex)
     {
@@ -104,7 +116,7 @@ class Program
       // Save the image with the text locations highlighted
       String output_file = "ocr_results.jpg";
       image.Save(output_file);
-      Console.WriteLine("Results saved in " + output_file);
+      Console.WriteLine("Results saved in " + output_file + "\n--------------------\n\n\n");
     }
   }
 
@@ -143,6 +155,8 @@ class Program
             Console.WriteLine(line.Text);
           }
         }
+
+        Console.WriteLine("\n--------------------\n\n\n");
       }
     }
   }
@@ -278,7 +292,7 @@ class Program
       }
 
       // Get moderation ratings
-      string ratings = $"Ratings:\n -Adult: {analysis.Adult.IsAdultContent}\n -Racy: {analysis.Adult.IsRacyContent}\n -Gore: {analysis.Adult.IsGoryContent}";
+      string ratings = $"Ratings:\n -Adult: {analysis.Adult.IsAdultContent}\n -Racy: {analysis.Adult.IsRacyContent}\n -Gore: {analysis.Adult.IsGoryContent}\n--------------------\n\n\n";
       Console.WriteLine(ratings);
     }
   }

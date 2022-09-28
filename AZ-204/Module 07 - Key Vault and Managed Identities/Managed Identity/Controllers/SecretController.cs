@@ -28,8 +28,18 @@ namespace managed_identity_demo.Controllers
             //Key Vault Client mit Authentication
             var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
             //KeyVault Client um Secrets abzurufen
-            string secret = (await kv.GetSecretAsync("https://managedidentkvtp2403.vault.azure.net/", "supergeheim")).Value ?? "";
+
+            string secret = "";
             
+            try
+            {
+                secret = (await kv.GetSecretAsync("https://managedidentkvtp2909.vault.azure.net/", "supergeheim")).Value;
+            }
+            catch
+            {
+                secret = "Not Authorized";
+            }
+
             return secret;
         }
     }

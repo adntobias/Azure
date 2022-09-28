@@ -52,6 +52,7 @@ app.get(process.env.REDIRECT_URL, async (req, res) => {
         code: authCode,
         //[client_id] Die App ID aus dem Azure AD 
         client_id: process.env.CLIENT_ID,
+        scope: process.env.SCOPE,
         //[client_secret] Das Client Secret aus dem Azure AD 
         client_secret: process.env.CLIENT_SECRET,
         //[redirect_uri] Die URL, die von MS mit dem Access Token aufgerufen wird

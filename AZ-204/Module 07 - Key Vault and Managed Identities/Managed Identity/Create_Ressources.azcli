@@ -1,8 +1,8 @@
 #Variables
 $Location="northeurope"
 $RGName="ManagedIdentGroupTP"
-$VaultName="ManagedIdentKVTP2403"
-$WebAppName="ManagedIdentWebAppTP2403"
+$VaultName="ManagedIdentKVTP"
+$WebAppName="ManagedIdentWebAppTP"
 $PlanName=$WebAppName+"-Plan"
 #ResourceGroup
 az group create -l $Location -n $RGName 
@@ -14,13 +14,17 @@ az appservice plan create -g $RGName -n $PlanName --sku FREE
 #WebApp
 az webapp create -g $RGName -p $PlanName -n $WebAppName
 
+#Deploy WebApp
+#dotnet clean
+#dotnet build
+#dotnet publish -c Release -o .\myapp
 #Windows
-#Compress-Archive -Path * -DestinationPath web.zip
+#Compress-Archive .\myapp\* deploy.zip -force
 #Unix 
-# zip -r <file-name>.zip .
+# zip -r deploy.zip .
 
 #Zip Deployment
-#az webapp deploy --resource-group $RGName --name $WebAppName --src-path .\web.zip
+#az webapp deploy --resource-group $RGName --name $WebAppName --src-path .\deploy.zip
 
 #Remove RG 
 #az group delete -n $RGName --no-wait -y

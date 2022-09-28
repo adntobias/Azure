@@ -10,7 +10,7 @@
 *.userosscache
 *.sln.docstates
 /obj*
-Powershell/PSScriptAnalyzerSettings.psd1
+PSScriptAnalyzerSettings.psd1
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 /bin*
