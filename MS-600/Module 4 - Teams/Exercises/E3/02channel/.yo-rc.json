@@ -1,0 +1,9 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "ADNTobi"
+    },
+    "libraryName": "learnMsTeamsTabs",
+    "generator-version": "4.0.1"
+  }
+}

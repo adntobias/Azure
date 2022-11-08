@@ -1,0 +1,9 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "ADNTobi"
+    },
+    "libraryName": "messagingExt",
+    "generator-version": "4.0.1"
+  }
+}

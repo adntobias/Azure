@@ -1,0 +1,95 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.4",
+    "body": [
+      {
+        "id": "cardHeader",
+        "type": "Container",
+        "items": [
+          {
+            "id": "planetName",
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "size": "Medium",
+            "text": "${name}"
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "id": "cardBody",
+        "items": [
+          {
+            "id": "planetSummary",
+            "type": "TextBlock",
+            "wrap": true,
+            "text": "${summary}"
+          },
+          {
+            "id": "planetDetails",
+            "type": "ColumnSet",
+            "columns": [
+              {
+                "type": "Column",
+                "width": 100,
+                "items": [
+                  {
+                    "id": "planetImage",
+                    "size": "Stretch",
+                    "type": "Image",
+                    "url": "${imageLink}"
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": 250,
+                "items": [
+                  {
+                    "type": "FactSet",
+                    "facts": [
+                      {
+                        "title": "Order from the sun:",
+                        "value": "${id}"
+                      },
+                      {
+                        "title": "Known satellites:",
+                        "value": "${numSatellites}"
+                      },
+                      {
+                        "title": "Solar orbit (*Earth years*):",
+                        "value": "${solarOrbitYears}"
+                      },
+                      {
+                        "title": "Average distance from the sun (*km*):",
+                        "value": "${solarOrbitAvgDistanceKm}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "imageAttribution",
+            "type": "TextBlock",
+            "size": "Medium",
+            "isSubtle": true,
+            "wrap": true,
+            "text": "*Image attribution: ${imageAlt}"
+          }
+        ]
+      },
+      {
+        "type": "ActionSet",
+        "actions": [
+          {
+            "type": "Action.OpenUrl",
+            "title": "Learn more on Wikipedia",
+            "url": "${wikiLink}"
+          }
+        ]
+      }
+    ]
+  }

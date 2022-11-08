@@ -1,0 +1,9 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "ADNTobi"
+    },
+    "libraryName": "teamsWebhooks",
+    "generator-version": "4.0.1"
+  }
+}

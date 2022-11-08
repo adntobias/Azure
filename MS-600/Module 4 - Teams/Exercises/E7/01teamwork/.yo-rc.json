@@ -1,0 +1,9 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "ADNTobi"
+    },
+    "libraryName": "learnMsteamsTeamwork",
+    "generator-version": "3.5.0"
+  }
+}

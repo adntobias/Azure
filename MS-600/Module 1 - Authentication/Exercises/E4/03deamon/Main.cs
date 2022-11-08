@@ -1,0 +1,94 @@
+using Microsoft.Identity.Client;
+using System.Text.Json;
+using System.Net.Http.Headers;
+
+namespace ProductCatalogDaemon;
+
+internal class Main
+{
+    public async Task RunAsync()
+    {
+        AuthenticationConfig config = AuthenticationConfig.ReadFromJsonFile("appsettings.json");
+
+        IConfidentialClientApplication app =
+          ConfidentialClientApplicationBuilder.Create(config.ClientId)
+              .WithClientSecret(config.ClientSecret)
+              .WithAuthority(new Uri(config.Authority))
+              .Build();
+
+        // With client credentials flows the scopes is ALWAYS of the shape "resource/.default", as the
+        // application permissions need to be set statically (in the portal or by PowerShell), and then granted by
+        // a tenant administrator
+        string[] scopes = new string[] { config.ApiScope };
+
+        AuthenticationResult result = null;
+        try
+        {
+            result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Token acquired \n");
+            Console.ResetColor();
+        }
+        catch (MsalServiceException ex) when (ex.Message.Contains("AADSTS70011"))
+        {
+            // Invalid scope. The scope has to be of the form "https://resourceurl/.default"
+            // Mitigation: change the scope to be as expected
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Scope provided is not supported");
+            Console.ResetColor();
+        }
+
+        if (result != null)
+        {
+            var httpClient = new HttpClient();
+            var defaultRequestHeaders = httpClient.DefaultRequestHeaders;
+            if (defaultRequestHeaders.Accept == null || !defaultRequestHeaders.Accept.Any(m => m.MediaType == "application/json"))
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
+            defaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.AccessToken);
+
+            HttpResponseMessage response = await httpClient.GetAsync($"{config.ApiBaseAddress}/api/Categories");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                var results = JsonDocument.Parse(json);
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Display(results.RootElement.EnumerateArray());
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Failed to call the Web Api: {response.StatusCode}");
+                string content = await response.Content.ReadAsStringAsync();
+
+                // Note that if you got reponse.Code == 403 and reponse.content.code == "Authorization_RequestDenied"
+                // this is because the tenant admin as not granted consent for the application to call the Web API
+                Console.WriteLine($"Content: {content}");
+            }
+            Console.ResetColor();
+
+        }
+    }
+
+    private void Display(JsonElement.ArrayEnumerator results)
+    {
+        Console.WriteLine("Web Api result: \n");
+
+        foreach (JsonElement element in results)
+        {
+            var id = -1;
+            var name = string.Empty;
+
+            if (element.TryGetProperty("id", out JsonElement idElement))
+            {
+                id = idElement.GetInt32();
+            }
+            if (element.TryGetProperty("name", out JsonElement nameElement))
+            {
+                name = nameElement.GetString();
+            }
+            Console.WriteLine($"ID: {id} - {name}");
+        }
+    }
+}

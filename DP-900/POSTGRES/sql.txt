@@ -199,3 +199,52 @@ SELECT film.title, film.length, CONCAT(actor.first_name, ' ', actor.last_name ) 
 FROM film_actor JOIN actor ON film_actor.actor_id = actor.actor_id
                 JOIN film  ON film.film_id = film_actor.film_id
 WHERE film.length > 60;
+
+
+Welche Filme (film_id) wurden am öftesten Verliehen? -> Top 5
+Zusatz: Wie lautet der Titel der Filme -> alles in einer Abfrage!
+
+select F.film_id, count(F.film_id), F.title
+from rental R JOIN inventory I ON R.inventory_id = I.inventory_id
+JOIN film F on I.film_id = F.film_id
+group by F.film_id, F.title
+order by count(F.film_id) DESC
+limit 5
+
+Wieviele Filme wurden noch nie Verliehen?
+Hinweis: https://www.w3schools.com/sql/sql_in.asp, 
+Zusatz: Wie lauten die Titel der nicht verliehenen Filme?
+
+select title --,count(title)
+from film
+where film_id NOT IN --IN 
+(
+  select distinct film_id
+  from rental join inventory ON rental.inventory_id = inventory.inventory_id
+)
+
+In wievielen Filmen haben die Schauspieler jeweils mitgespielt?
+Zusatz: Wer hat in über 40 Filmen mitgespielt?
+
+select A.first_name, A.last_name, count(A.actor_id) as Role_Count
+from actor as A join film_actor FA on A.actor_id = FA.actor_id
+group by A.first_name, A.last_name
+having count(A.actor_id) > 40
+
+Wieviele Filme werden exclusiv in Store1 angeboten? 
+
+select count(film_id)
+from inventory I
+where I.store_id = 1 AND film_id NOT IN 
+(
+	select film_id
+  	from inventory
+  	where store_id = 2
+)
+
+Wie hoch war der Umsatz im April 2007?
+Hinweis: https://www.w3schools.com/sql/sql_between.asp
+
+SELECT SUM(Payment.amount) AS sum_amt
+FROM payment
+where payment.payment_date BETWEEN '2007-04-01 00:00:00' AND '2007-04-30 00:00:00';
