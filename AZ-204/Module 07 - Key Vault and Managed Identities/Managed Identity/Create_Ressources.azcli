@@ -24,7 +24,7 @@ az webapp create -g $RGName -p $PlanName -n $WebAppName
 # zip -r deploy.zip .
 
 #Zip Deployment
-#az webapp deploy --resource-group $RGName --name $WebAppName --src-path .\deploy.zip
+#az webapp deploy --resource-group $RGName --name $WebAppName --src-path .\deploy.zip --type zip
 
 #Remove RG 
 #az group delete -n $RGName --no-wait -y

@@ -9,7 +9,7 @@ Get-Process | where -Property WS -gt 5MB | select -First 5
 #Alle Prozesse, die mehr als 50MB und weniger als 100MB Speicher verbrauchen
 Get-Process | where { ($_.WS -gt 50MB) -and ($_.WS -lt 100MB) }
 
-#Alle laufenden Services, beginnend "a" ausgeben
+#Alle aktuell auf dem System laufenden Services, beginnend "a" ausgeben
 Get-Service | where { $_.Status -eq "running" -and $_.Name -like "a*" }
 
 #15 zufällige Services nach Status absteigend und Name aufsteigend sortiert
@@ -112,7 +112,7 @@ $user = "Max_Mustermann"
 $pw0d = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pw0d
 
-#H�ufige Kurzschreibweisen
+#Häufige Kurzschreibweisen
 Get-Member => gm
 Where-Object => where => ?
 ForEach-Object => foreach => %
@@ -140,7 +140,7 @@ $user = "Max_Mustermann"
 $pw0d = "Passwort123" | ConvertTo-SecureString -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $pw0d
 
-#MFA-f�hig
+#MFA-fähig
 Connect-AzAccount
 
 #----------------------------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ $rg = New-AzResourceGroup -Name "MyRg" -Location $loc
 #ResourceGroup abrufen
 Get-AzResourceGroup -Name $rg.ResourceGroupName
 
-#L�schen einer ResourceGroup
+#Löschen einer ResourceGroup
 Remove-AzResourceGroup -Id $rg.ResourceId 
 
 #----------------------------------------------------------------------------------------------------------------
@@ -195,13 +195,13 @@ function Get-AzVMStatus {
   $RGs = Get-AzResourceGroup
   
   foreach ($RG in $RGs) {
-    $VMs = Get-AzVM -ResourceGroupName $RG.ResourceGroupName  
+    $VMs = Get-AzVM -ResourceGroupName $RG.ResourceGroupName
     
     foreach ($VM in $VMs) {
       $VMDetail = Get-AzVM -ResourceGroupName $RG.ResourceGroupName -Name $VM.Name -Status
-      $RGN = $VMDetail.ResourceGroupName  
+      $RGN = $VMDetail.ResourceGroupName
      
-      foreach ($VMStatus in $VMDetail.Statuses) { 
+      foreach ($VMStatus in $VMDetail.Statuses) {
         $VMStatusDetail = $VMStatus.DisplayStatus
       }
 
