@@ -14,6 +14,7 @@ namespace QueueStorage
 
         // Batch Account credentials
         static String connectionString = azureConfig.GetValue("connectionString").ToString();
+        static String suffix = Guid.NewGuid().ToString();
         
         static void Main(string[] args)
         {
@@ -21,7 +22,7 @@ namespace QueueStorage
         }
 
         static async Task AsyncMain(string[] args) {
-            string queueName = "quickstartqueues-f110e125-aa27-4cac-98d5-7f62ff2836db" ;//+ Guid.NewGuid().ToString();
+            string queueName = "quickstartqueues-"+suffix;//+ Guid.NewGuid().ToString();
 
             Console.WriteLine($"Creating queue: {queueName}");
 

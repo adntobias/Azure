@@ -33,7 +33,7 @@ namespace managed_identity_demo.Controllers
             
             try
             {
-                secret = (await kv.GetSecretAsync("https://managedidentkvtp0902.vault.azure.net/", "supergeheim")).Value;
+                secret = (await kv.GetSecretAsync("https://wrkshpkeyvault.vault.azure.net/", "supergeheim")).Value;
             }
             catch
             {

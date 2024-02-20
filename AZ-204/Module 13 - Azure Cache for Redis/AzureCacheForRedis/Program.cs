@@ -33,9 +33,9 @@ namespace AzureCacheForRedis
       Console.WriteLine("\nCache command  : " + cacheCommand + " or StringGet()");
       Console.WriteLine("Cache response : " + cache.StringGet("System:Message").ToString());
 
-      cacheCommand = "SET System:Message \"AZ204 MOC Kurs!!\"";
+      cacheCommand = "SET System:Message \"AZ204 Kurs 08-12-2023 !!\"";
       Console.WriteLine("\nCache command  : " + cacheCommand + " or StringSet()");
-      Console.WriteLine("Cache response : " + cache.StringSet("System:Message", "AZ204 MOC Kurs!!").ToString());
+      Console.WriteLine("Cache response : " + cache.StringSet("System:Message", "AZ204 Kurs 08-12-2023 !!").ToString());
 
       // Demonstrate "SET Message" executed as expected...
       cacheCommand = "GET System:Message";
@@ -48,7 +48,7 @@ namespace AzureCacheForRedis
       Console.WriteLine("Cache response : \n" + cache.Execute("CLIENT", "LIST").ToString().Replace("id=", "id="));
 
       // Store .NET object to cache
-      Employee e007 = new Employee("007", "Davide Columbo", 100);
+      Employee e007 = new Employee("007", "Patrick Star", 100);
       Console.WriteLine("Cache response from storing Employee .NET object : " +
           cache.StringSet("e007", JsonConvert.SerializeObject(e007)));
 

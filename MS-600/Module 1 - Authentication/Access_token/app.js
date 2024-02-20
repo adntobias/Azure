@@ -10,6 +10,14 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 let access_token = ""
+//Logout redirect to Microsoft logout page
+app.get("/logout", (req, res) => {
+    access_token = "";
+    res.redirect(
+        "https://login.microsoftonline.com/" + process.env.TENANT_ID + "/oauth2/v2.0/logout?" +
+        "post_logout_redirect_uri=" + process.env.BASE_URL         
+        );
+});
 
 //Weiterleitung zur Microsoft login page
 app.get("/login", (req, res) => {
@@ -27,7 +35,7 @@ app.get("/login", (req, res) => {
       //[state] Optionaler Wert, kann z.b. weitere Infos an die App weitergeben bei Login
       "&state= " +
       //[scope] Die angeforderten Rechte der Applikation
-      "&scope=" + process.env.SCOPE + 
+      "&scope=" + process.env.SCOPE + // "https://graph.microsoft.com/.default" 
       "&prompt=consent"
       //Optionale Parameter
       //[Prompt] Kann "login", "consent" oder "none" sein, spezifiziert den Prompt an den User beim Login
@@ -76,7 +84,7 @@ app.get(process.env.REDIRECT_URL, async (req, res) => {
 
 app.get('*', (req, res) => {
     if(access_token) {
-        return res.send('You got your token!! <br>' + access_token)
+        return res.send('<a href="'+process.env.BASE_URL+'/logout">LOGOUT</a><br/>You got your token!! <br><div style="display: block;max-width:95%;word-wrap: break-word">' + access_token+'</div>')
     }
 
     res.send('<a href="'+process.env.BASE_URL+'/login">LOGIN</a>')

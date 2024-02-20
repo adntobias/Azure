@@ -21,7 +21,7 @@ FROM Volcanos v
 WHERE v["Volcano Name"] = "Hekla" 
 
 
--- Which is taller, Mt Fiji or Mt Etna?
+-- Which is taller, Mt Fuji or Mt Etna?
 SELECT v["Volcano Name"], v.Elevation
 FROM Volcanos v
 WHERE v["Volcano Name"] = "Fuji" OR v["Volcano Name"] = "Etna"

@@ -21,9 +21,9 @@ namespace _01user
             var client = GetAuthenticatedGraphClient(config, userName, userPassword);
 
             // request 1: create user
-            //var resultNewUser = CreateUserAsync(client);
-            //resultNewUser.Wait();
-            //Console.WriteLine("New user ID: " + resultNewUser.Id);
+            var resultNewUser = CreateUserAsync(client);
+            resultNewUser.Wait();
+            Console.WriteLine("New user ID: " + resultNewUser.Id);
 
             // request 2: update user
             // (1/2) get the user we just created
@@ -40,7 +40,6 @@ namespace _01user
             // request 3: delete user
             var deleteTask = DeleteUserAsync(client, userToUpdate.Id);
             deleteTask.Wait();
-
         }
 
         private static async Task<Microsoft.Graph.User> CreateUserAsync(GraphServiceClient client)
