@@ -8,13 +8,6 @@ Param(
 $RequestBody = $WebhookData.RequestBody | ConvertFrom-Json
 $Data = $RequestBody.data
 
-# Disable Azure context autosave for the current process
-Disable-AzContextAutosave -Scope Process
-
-# Connect to the Azure account and set the context to the current subscription
-$ctx = (Connect-AzAccount -Identity).Context
-Set-AzContext -Subscription $ctx.Subscription
-
 # Get the creator, resource ID, and current date
 $createdBy = $Data.claims.name
 $resourceID = $Data.resourceUri
