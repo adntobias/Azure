@@ -1,21 +1,28 @@
 #Run this script in Azure CloudShell
 
 #Variables
-Suffix="tp" #$(head -n 10 /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1) #RandomString - To Be Replaced
+Suffix="devtp" #$(head -n 10 /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1) #RandomString - To Be Replaced
+
 RGName="dp900demo"$Suffix
-Location="germanywestcentral"
-CosmosName="cosmosdemo"$Suffix
-PostgresName="postgresdemo"$Suffix
-OCRName="ocrdemo"$Suffix
-SQLServerName="sqldemoserver"$Suffix
-SQLDBCarsName="cars"$Suffix
-SQLDBDemoName="sqldemo"$Suffix
-StorageAccName="demostore"$Suffix
-FileContainerName="datafactory"
-DataFactoryName="datafactorydemo"$Suffix
+Location="westus"
+
 SQLADMIN="sqladmin"
 SQLPWD="Passw.rd"
-IdentityName="dp900ident"
+
+CosmosName="cosmosdemo"$Suffix
+PostgresName="postgresdemo"$Suffix
+
+SQLServerName="sqlserverdemo"$Suffix
+SQLDBCarsName="cars"
+SQLDBDemoName="sqldemo"$Suffix
+
+StorageAccName="storaccdemo"$Suffix
+FileContainerName="datafactory"
+
+DataFactoryName="datafactorydemo"$Suffix
+OCRName="ocrdemo"$Suffix
+
+IdentityName="identdemo"$Suffix
 #--------------------------------------------------
 
 #Create Ressources
@@ -24,15 +31,16 @@ az group create --name $RGName --location $Location
 az identity create --name $IdentityName -g $RGName
 IdentID=$(az identity show -n $IdentityName -g $RGName --query principalId -o tsv)
 
-az storage account create -g $RGName -n $StorageAccName --location $Location --sku Standard_LRS --kind StorageV2 --user-identity-id $IdentID
+az storage account create -g $RGName -n $StorageAccName --location $Location --sku Standard_LRS --kind StorageV2 --user-identity-id $IdentID --allow-blob-public-access true
 StorAccKey=$(az storage account keys list -g $RGName -n $StorageAccName --query [0].value -o tsv)
 az storage container create -n $FileContainerName --public-access blob --account-name $StorageAccName --account-key $StorAccKey
+az storage blob upload --account-name $StorageAccName --container-name $FileContainerName --name autos.csv --file "./DATA FACTORY/autos.csv" --account-key $StorAccKey
 #Upload .csv to Container (https://github.com/adntobias/Azure/blob/master/DP-900/DATA%20FACTORY/autos.csv)
 
 az datafactory create --location $Location --name $DataFactoryName -g $RGName 
 
 #difficulties to provision ressources at the time, so change to US
-Location="westus"
+#Location="westus"
 
 az sql server create -l $Location -g $RGName -n $SQLServerName -u $SQLADMIN -p $SQLPWD --user-assigned-identity-id $IdentID 
 az sql db create -g $RGName -s $SQLServerName -n $SQLDBDemoName -e Basic --max-size 500MB --no-wait

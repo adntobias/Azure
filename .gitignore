@@ -11,6 +11,7 @@
 *.sln.docstates
 /obj*
 PSScriptAnalyzerSettings.psd1
+*.dll
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 /bin*
@@ -20,6 +21,8 @@ appsettings.json
 azureConfig.json
 
 /AZ-203
+eventTrigger.txt
+*.exe
 
 # Build results
 [Dd]ebug/
