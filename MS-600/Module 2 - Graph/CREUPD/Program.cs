@@ -1,113 +1,136 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.Identity.Client;
 using Microsoft.Graph;
-
-using System.Net.Http;
-using System.Net.Http.Headers;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json.Linq;
+using Azure.Identity;
 
 namespace CREUPD
 {
-  class Program
-  {
-    static JObject azureConfig = JObject.Parse(System.IO.File.ReadAllText("appsettings.json"));
-    static String clientID = azureConfig.GetValue("CLIENT_ID").ToString();
-    static String authority = azureConfig.GetValue("AUTHORITY").ToString();
-    static String secret = azureConfig.GetValue("SECRET").ToString();
-
-    //Permissions: User.Read, User.ReadWrite.All
-    private static List<string> scopes = new List<string>();
-
-    static void Main(string[] args)
+    class Program
     {
-      scopes.Add("https://graph.microsoft.com/.default");
+        static JObject azureConfig = JObject.Parse(System.IO.File.ReadAllText("appsettings.json"));
+        static String clientID = azureConfig.GetValue("CLIENT_ID").ToString();
+        static String tenantID = azureConfig.GetValue("TENANT_ID").ToString();
+        static String secret = azureConfig.GetValue("SECRET").ToString();
 
-      var ccs = ConfidentialClientApplicationBuilder.Create(clientID)
-                                                    .WithAuthority(authority)
-                                                    .WithClientSecret(secret)
-                                                    .Build();
+        //Permissions: User.Read, User.ReadWrite.All
+        //private static List<string> scopes = new List<string>();
 
-      GraphServiceClient graphServiceClient = new GraphServiceClient(new DelegateAuthenticationProvider(async (requestMessage) =>
-      {
-        var authResult = await ccs.AcquireTokenForClient(scopes).ExecuteAsync();
-
-        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
-      }));
-
-      //Wird später zum neuen Manager
-      var manager = graphServiceClient.Users["mctest@devtobi.onmicrosoft.com"].Request().GetAsync().GetAwaiter().GetResult();
-
-      var newUser = new User
-      {
-        DisplayName = "Test User",
-        UserPrincipalName = "testu@devtobi.onmicrosoft.com",
-        MailNickname = "testu",
-        AccountEnabled = true,
-        PasswordProfile = new PasswordProfile
+        static void Main(string[] args)
         {
-          Password = "ChangeMe1!",
-          ForceChangePasswordNextSignIn = false
-        },
-        GivenName = "Test",
-        Department = "TestGuys",
-        Surname = "User"
-      };
+            var scopes = new[] { "https://graph.microsoft.com/.default" };
+            //scopes.Add("https://graph.microsoft.com/.default");
 
-      //User anlegen
-      try
-      {
-        var userCall = graphServiceClient.Users.Request().AddAsync(newUser).GetAwaiter().GetResult();
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine($"ERROR: {e.Message}");
-      }
-      finally
-      {
-        var timedKillCommand = new Timer((e) =>
-        {
-          Console.WriteLine("Killing The User");
-          var result = graphServiceClient.Users[newUser.UserPrincipalName].Request().DeleteAsync();
+            var options = new ClientSecretCredentialOptions
+            {
+                AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
+            };
 
-          Console.WriteLine("Assimilated");
+            var clientSecretCredential = new ClientSecretCredential(tenantID, clientID, secret, options);
 
-          //kill
-          Environment.Exit(0);
-        }, null, ((1000 * 60) * 1), Timeout.Infinite);
-      }
+            var graphServiceClient = new GraphServiceClient(clientSecretCredential, scopes);
 
-      Console.WriteLine("User created? I\'m checking");
-      var checkUser = graphServiceClient.Users.Request().Filter($"displayName eq '{newUser.DisplayName}'").GetAsync().GetAwaiter().GetResult();
+            //Wird später zum neuen Manager
+            var manager = graphServiceClient.Users["mctest@devtobi.onmicrosoft.com"].GetAsync().GetAwaiter().GetResult();
 
-      if (checkUser != null && checkUser.Count > 0)
-      {
-        var checkUserContent = checkUser.CurrentPage[0];
-        
-        Console.WriteLine("User created! Let\'s assign a manager");
-        graphServiceClient.Users[checkUserContent.Id].Manager.Reference.Request().PutAsync(manager.Id).GetAwaiter();
+            var newUser = new User
+            {
+                DisplayName = "Test User",
+                UserPrincipalName = "testu@devtobi.onmicrosoft.com",
+                MailNickname = "testu",
+                AccountEnabled = true,
+                PasswordProfile = new PasswordProfile
+                {
+                    Password = "ChangeMe1!",
+                    ForceChangePasswordNextSignIn = false
+                },
+                GivenName = "Test",
+                Department = "TestGuys",
+                Surname = "User"
+            };
 
-        Console.WriteLine("Manager Assigned! Let\'s rename him ....");
-        var userUpdate = new User
-        {
-          DisplayName = "Updated thisGuy",
-          OfficeLocation = "Knowhere"
-        };
+            var timedKillCommand = new Timer((e) =>
+            {
+                Console.WriteLine("Killing The User");
+                try
+                {
+                    graphServiceClient.Users[newUser.UserPrincipalName].DeleteAsync().GetAwaiter();
 
-        var updatedUser = graphServiceClient.Users[checkUserContent.Id].Request().UpdateAsync(userUpdate).GetAwaiter();
-        checkUserContent = graphServiceClient.Users[checkUserContent.Id].Request().Select(u => new { u.DisplayName, u.Department, u.Id }).GetAsync().GetAwaiter().GetResult();
-       
-        Console.WriteLine($"{checkUserContent.DisplayName} working at {checkUserContent.Department}");
-      }
-      else
-      {
-        Console.WriteLine("User NOT created!");
-      }
+                    Console.WriteLine("Assimilated");
+                }
+                catch (Exception e1)
+                {
+                    Console.WriteLine($"ERROR: {e1.Message}");
+                }
+                finally
+                {
+                    Environment.Exit(0);
+                }
+            }, null, ((1000 * 60) * 1), Timeout.Infinite);
 
-      Console.ReadLine();
+            //User anlegen
+            try
+            {
+                var userCall = graphServiceClient.Users.PostAsync(newUser).GetAwaiter().GetResult();
+
+                Console.WriteLine("User created? I\'m checking");
+                
+                var checkUser = graphServiceClient.Users.GetAsync(config => {
+                    config.QueryParameters.Select = ["DisplayName", "Department", "Id", "Manager"];
+                    config.QueryParameters.Filter = $"displayName eq '{newUser.DisplayName}'";
+                }).GetAwaiter().GetResult();
+
+                if (checkUser == null)
+                {
+                    Console.WriteLine("User NOT created!");
+                    return;
+                }
+
+                while(checkUser.Value != null)
+                {
+                    var user = checkUser.Value[0];
+
+                    Console.WriteLine($"User: {user.DisplayName}");
+
+                    Console.WriteLine("User created! Let\'s assign a manager");
+                    graphServiceClient.Users[user.Id].Manager.Ref.PutAsync(new ReferenceUpdate
+                    {
+                        OdataId = $"https://graph.microsoft.com/v1.0/users/{manager.Id}"
+                    }).GetAwaiter();
+
+                    Console.WriteLine("Manager Assigned! Let\'s rename him ....");
+                    var userUpdate = new User
+                    {
+                        DisplayName = "Updated thisGuy",
+                        OfficeLocation = "Knowhere"
+                    };
+
+                    var updatedUser = graphServiceClient.Users[user.Id].PatchAsync(userUpdate).GetAwaiter().GetResult();
+                    if (updatedUser == null)
+                    {
+                        Console.WriteLine($"{userUpdate.DisplayName} working at {userUpdate.OfficeLocation}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("User not updated!");
+                    }
+
+                    //checkUserContent = graphServiceClient.Users[user.Id].GetAsync(config =>
+                    //{
+                    //    config.QueryParameters.Select = ["DisplayName", "Department", "Id"];
+                    //}).GetAwaiter().GetResult();
+                    break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ERROR: {e.Message}");
+            }
+
+            Console.WriteLine("HIT ME");
+            Console.ReadLine();
+        }
     }
-  }
 }
 

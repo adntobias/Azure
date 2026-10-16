@@ -1,0 +1,3 @@
+openai>=1.50
+pypdf>=5.0
+numpy>=2.0

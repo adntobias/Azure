@@ -193,7 +193,11 @@ class Program
         Console.WriteLine("Tags:");
         foreach (var tag in analysis.Tags)
         {
-          Console.WriteLine($" -{tag.Name} (confidence: {tag.Confidence.ToString("P")})");
+          if(tag.Confidence > 0.9)
+          {
+            Console.WriteLine($" -{tag.Name} (confidence: {tag.Confidence.ToString("P")})");
+          }
+          //Console.WriteLine($" -{tag.Name} (confidence: {tag.Confidence.ToString("P")})");
         }
       }
 

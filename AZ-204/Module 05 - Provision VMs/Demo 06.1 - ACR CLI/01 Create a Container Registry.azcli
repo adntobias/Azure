@@ -1,5 +1,6 @@
-$RGName="ACRGroupTP"
-$Registry="MyACRTP"
+$RGName="MyACRGroupTP"
+$Registry="myacrtp030724"
+$ContainerName="MyAPIContainerTP"
 
 # Eine Container Registry Instanz erstellen
 az group create -n $RGName -l northeurope
@@ -7,3 +8,44 @@ az acr create --resource-group $RGName --name $Registry --sku Basic
 
 # Login
 az acr login --name $Registry
+
+# Docker Image laden
+docker pull mcr.microsoft.com/azuredocs/aci-helloworld
+docker pull chuanwen/cowsay
+
+# Docker Image lokal starten
+docker run -it mcr.microsoft.com/azuredocs/aci-helloworld
+
+# Login Server Namen der ACR Instanz abfragen
+$RegistryFull=$( az acr list --resource-group $RGName --query "[].{acrLoginServer:loginServer}" --output tsv)
+
+# Image mit diesem Namen Taggen
+docker tag chuanwen/cowsay $RegistryFull"/cowsay:v1"
+
+# Image in die Registry pushen
+docker push $RegistryFull"/cowsay:v1"
+
+# Build the image
+cd '.\Docker Demo\'
+az acr build --image myapi:v1 --registry $Registry --file Dockerfile .
+
+# Images als Liste ausgeben
+az acr repository list --name $Registry --output table
+
+# Tags des Repositories ausgeben
+az acr repository show-tags --name $Registry --repository cowsay --output table
+
+# Admin User aktivieren
+az acr update --name $Registry --admin-enabled true
+
+# Password abfragen
+$RegistryPWD = $(az acr credential show --name $Registry --query "passwords[0].value")
+
+# Deploy container image
+az container create -g $RGName -n $ContName --image $RegistryFull"/myapi:v1" --cpu 2 --memory 2 --registry-username $Registry --registry-password $RegistryPWD --dns-name-label "dns-label" --ports 80
+
+# Container Status anzeigen
+az container show -g $RGName -n $ContName --query instanceView.state
+
+# Container-URL abfragen
+az container show --resource-group $RGName -n $ContName --query ipAddress.fqdn

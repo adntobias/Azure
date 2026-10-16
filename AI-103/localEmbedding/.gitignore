@@ -1,0 +1,4 @@
+.venv/
+embeddings/*
+__pycache__/
+pdfs/*

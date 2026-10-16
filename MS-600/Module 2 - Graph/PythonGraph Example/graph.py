@@ -63,7 +63,7 @@ class Graph:
 
     def send_mail(self, subject: str, body: str, recipient: str):
         request_body = {
-            'message': {
+            'message': { 
                 'subject': subject,
                 'body': {
                     'contentType': 'text',

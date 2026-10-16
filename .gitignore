@@ -19,7 +19,14 @@ PSScriptAnalyzerSettings.psd1
 mono_crash.*
 appsettings.json
 azureConfig.json
+*.sln
+*.proj
+**/*.wav
 
+node_modules/
+.vscode
+.env
+.labenv
 /AZ-203
 eventTrigger.txt
 *.exe
